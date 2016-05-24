@@ -249,7 +249,8 @@ class fe65p2(Dut):
             self['global_conf']['SignLd'] = 0
             
     def interpret_raw_data(self, raw_data, meta_data = []):
-        data_type = {'names':['bcid','col','row','tot', 'lv1id','scan_param_id'], 'formats':['uint32','uint8','uint8','uint8','uint8', 'uint16']}
+        #I try to add the new variables from the TDC
+        data_type = {'names':['bcid','col','row','TDC', 'TDCtimeStamp','tot', 'lv1id','scan_param_id'], 'formats':['uint32','uint8','uint8', 'uint16', 'uint8','uint8','uint8', 'uint16']}
         ret = []
         if len(meta_data):
             param, index = np.unique(meta_data['scan_param_id'], return_index=True)
@@ -308,4 +309,13 @@ if __name__=="__main__":
     chip = fe65p2()
     chip.init()
     chip.power_up()
-    
+    print chip.power_status()
+    chip['fifo'].reset()
+
+
+    #import time
+    #time.sleep(0.1)
+
+
+    print chip['fifo'].get_fifo_size()
+

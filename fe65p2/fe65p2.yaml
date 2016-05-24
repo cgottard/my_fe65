@@ -54,6 +54,11 @@ hw_drivers:
     type      : fei4_rx
     interface : intf
     base_addr : 0x16000
+
+  - name      : tdc
+    type      : tdc_s3
+    interface : intf
+    base_addr : 0x19000
     
   - name      : fifo
     type      : sram_fifo

@@ -32,8 +32,8 @@ class TimewalkScan(ScanBase):
             Number of injections.
         '''
 
-        self.dut['INJ_LO'].set_voltage(0.6, unit='V')
-        self.dut['INJ_HI'].set_voltage(1.2, unit='V')
+        self.dut['INJ_LO'].set_voltage(0.85, unit='V')
+        self.dut['INJ_HI'].set_voltage(1.0, unit='V')
 
         self.dut['global_conf']['PrmpVbpDac'] = 80	#Preamp Follower bias
         self.dut['global_conf']['vthin1Dac'] = 255 	# "Pos discr threshold
@@ -90,18 +90,21 @@ class TimewalkScan(ScanBase):
         #enable inj pulse and trigger
         wiat_for_read = (16 + columns.count(True) * (4*64/mask_steps) * 2 ) * (20/2) + 100
         self.dut['inj'].set_delay(wiat_for_read)
-        self.dut['inj'].set_width(100) #100
+        self.dut['inj'].set_width(10) #100
         self.dut['inj'].set_repeat(99999)
-        self.dut['inj'].set_en(False)
+        self.dut['inj'].set_en(False) #False
 
-        self.dut['trigger'].set_delay(400-4)
+        self.dut['trigger'].set_delay(400-4)       #400-4
         self.dut['trigger'].set_width(16)
         self.dut['trigger'].set_repeat(1)
-        self.dut['trigger'].set_en(True)
+        self.dut['trigger'].set_en(False)
+
+        logging.debug('Enable TDC')
+        self.dut['tdc'].ENABLE = 1
 
         #lmask = [0]*64 + [0]*32 + [1] +[0]*31 + [0]*3968 #only the 32nd px of the 2nd col should fire.
 
-        lmask = 4069*[0]+[1]+26*[0]
+        lmask = 4067*[0]+[1]+28*[0]
         print len(lmask)
         bv_mask = bitarray.bitarray(lmask)
         with self.readout():

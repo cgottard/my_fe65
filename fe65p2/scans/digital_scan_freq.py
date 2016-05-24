@@ -140,22 +140,15 @@ class DigitalScanFreq(object):
 			Number of injections.
 		'''
 
-
-#		BX CLOCK SECTION
-#		path = "/home/carlo/fe65_p2/firmware/ise/digital_scan_BXbits/"
-#		self.bitfiles = OrderedDict([(80, "fe65p2_mio_BX80.bit"), (60, "fe65p2_mio_BX60.bit"), (50, "fe65p2_mio_BX50.bit"), (45, "fe65p2_mio_BX45.bit"), (40,"fe65p2_mio_BX40.bit"),
-#									(35,"fe65p2_mio_BX35.bit"),(30,"fe65p2_mio_BX30.bit"), (25,"fe65p2_mio_BX25.bit"),(20,"fe65p2_mio_BX20.bit"),(10, "fe65p2_mio_BX10.bit")])
-#		self.bitfiles = OrderedDict([(100, "fe65p2_mio_BX100.bit")])
-
-
-#		DATA CLOCK SECTION
-		path = "/home/carlo/fe65_p2/firmware/ise/CMD_bits/"
-		self.bitfiles = OrderedDict([(20,"fe65p2_mio_CMD20.bit"), (30,"fe65p2_mio_CMD30.bit"),(40,"fe65p2_mio_CMD40.bit"),(50,"fe65p2_mio_CMD50.bit"), (60,"fe65p2_mio_CMD60.bit"),(70,"fe65p2_mio_CMD70.bit"),(80,"fe65p2_mio_CMD80.bit"),(90,"fe65p2_mio_CMD90.bit"), (100,"fe65p2_mio_CMD100.bit"), (110,"fe65p2_mio_CMD110.bit"), (120,"fe65p2_mio_CMD120.bit"), (130,"fe65p2_mio_CMD130.bit"), (140,"fe65p2_mio_CMD140.bit"), (150,"fe65p2_mio_CMD150.bit"),  (160,"fe65p2_mio_CMD160.bit")])
-#		self.bitfiles = OrderedDict([(100, "fe65p2_mio_CMD40.bit")])
+		#bitfiles
+		self.clock_name='DATA clock'
+		path = "/home/carlo/fe65_p2/firmware/ise/DATA_bits/"
+#		self.bitfiles = OrderedDict([(20,"fe65p2_mio_CMD20.bit"), (30,"fe65p2_mio_CMD30.bit"),(40,"fe65p2_mio_CMD40.bit"),(50,"fe65p2_mio_CMD50.bit"), (60,"fe65p2_mio_CMD60.bit"),(70,"fe65p2_mio_CMD70.bit"),(80,"fe65p2_mio_CMD80.bit"),(90,"fe65p2_mio_CMD90.bit"), (100,"fe65p2_mio_CMD100.bit"), (110,"fe65p2_mio_CMD110.bit"), (120,"fe65p2_mio_CMD120.bit"), (130,"fe65p2_mio_CMD130.bit"), (140,"fe65p2_mio_CMD140.bit"), (150,"fe65p2_mio_CMD150.bit"),  (160,"fe65p2_mio_CMD160.bit")])
+		self.bitfiles = OrderedDict([(40, "fe65p2_mio_DATA40.bit"),(60, "fe65p2_mio_DATA60.bit"), (80, "fe65p2_mio_DATA80.bit"), (100, "fe65p2_mio_DATA100.bit"),(120, "fe65p2_mio_DATA120.bit"),(160, "fe65p2_mio_DATA160.bit")])
 
 
 		self.voltages = [1.5, 1.4, 1.3, 1.2, 1.1, 1.0, 0.95, 0.9]
-		#self.voltages = [1.2]
+#		self.voltages = [1.3, 1.2, 1.1, 1.0]
 
 		self.not_fired = []
 		for freq in self.bitfiles.iterkeys():
@@ -317,7 +310,9 @@ class DigitalScanFreq(object):
 		fig, ax = plt.subplots()
 		plt.title('Missed Voltage Pulses (100 inj. x 4096 pix.)')
 		ax.set_axis_off()
-		tb = Table(ax, bbox=[0.05, 0.05, 0.95, 0.95])
+		fig.text(0.70, 0.05, self.clock_name +' (MHz)', fontsize=14)
+		fig.text(0.02, 0.90, 'Supply voltage (V)', fontsize=14, rotation=90)
+		tb = Table(ax, bbox=[0.01, 0.01, 0.99, 0.99])
 		ncols = len(self.bitfiles)
 		nrows = len(self.voltages)
 		width, height = 1.0 / ncols, 1.0 / nrows
@@ -325,19 +320,26 @@ class DigitalScanFreq(object):
 		for (i, j), val in np.ndenumerate(data):
 			color = ''
 			val = abs(val)
-			if (val == 0): color = 'green'
-			if (val > 0 & val < 50): color = 'yellow'
-			if val > 50: color = 'red'
+			#use different colors for frequencies above 110MHz where the FPGA is no more reliable
+			if(j<10):
+				if (val == 0): color = 'green'
+				if (val > 0 & val < 50): color = 'yellow'
+				if val > 50: color = 'red'
+			#greyscale
+			if(j>9):
+				if (val == 0): color = 'white'
+				if (val > 0 & val < 50): color ='#b2b2b2'
+				if val > 50: color = '#9a9a9a'
 			tb.add_cell(i, j, width, height, text=str(val),
 						loc='center', facecolor=color)
 		# Row Labels...
 		for i in range(len(self.voltages)):
-			tb.add_cell(i, -1, width, height, text=str(self.voltages[i])+'V', loc='right',
+			tb.add_cell(i, -1, width, height, text=str(self.voltages[i]), loc='right',
 						edgecolor='none', facecolor='none')
 		# Column Labels...
 		colj = 0
 		for j in self.bitfiles.iterkeys():
-			tb.add_cell(nrows + 1, colj, width, height / 2, text=str(j)+'MHz', loc='center',
+			tb.add_cell(nrows + 1, colj, width, height / 2, text=str(j), loc='center',
 						edgecolor='none', facecolor='none')
 			colj+=1
 		ax.add_table(tb)

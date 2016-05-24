@@ -21,7 +21,7 @@ local_configuration = {
 class AnalogScan(ScanBase):
     scan_id = "analog_scan"
 
-    def scan(self, mask_steps=4, repeat_command=100, columns = [True] * 16, **kwargs):
+    def scan(self, mask_steps=4, repeat_command=1000, columns = [True] * 16, **kwargs):
         '''Scan loop
 
         Parameters

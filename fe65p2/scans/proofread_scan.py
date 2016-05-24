@@ -144,7 +144,9 @@ class proofread_scan(ScanBase):
 		fig, ax = plt.subplots()
 		plt.title('Pixel registers errors')
 		ax.set_axis_off()
-		tb = Table(ax, bbox=[0,0,1,1])
+		fig.text(0.70, 0.05, 'SPI clock (MHz)', fontsize=14)
+		fig.text(0.02, 0.90, 'Supply voltage (V)', fontsize=14, rotation=90)
+		tb = Table(ax, bbox=[0.01,0.01,0.99,0.99])
 		ncols = len(self.bitfiles)
 		nrows = len(self.voltages)
 		width, height = 1.0 / ncols, 1.0 / nrows
@@ -158,12 +160,12 @@ class proofread_scan(ScanBase):
 				loc='center', facecolor=color)
 		# Row Labels...
 		for i in range(len(self.voltages)):
-			tb.add_cell(i, -1, width, height, text=str(self.voltages[i])+'V', loc='right',
+			tb.add_cell(i, -1, width, height, text=str(self.voltages[i]), loc='right',
 						edgecolor='none', facecolor='none')
 		# Column Labels...
 		for j in range(len(self.bitfiles)):
 			newlabel1 = str(self.bitfiles[j][-9:-7]).replace("_","")
-			tb.add_cell(nrows+1, j, width, height/2, text=newlabel1+' MHz', loc='center',
+			tb.add_cell(nrows+1, j, width, height/2, text=newlabel1, loc='center',
 							   edgecolor='none', facecolor='none')
 		ax.add_table(tb)
 		shmoopdf.savefig()
@@ -173,7 +175,9 @@ class proofread_scan(ScanBase):
 		data_g = shmoo_glob_np.reshape(len(self.voltages),-1,order='F')
 		fig_g, ax_g = plt.subplots()
 		ax_g.set_axis_off()
-		tb_g = Table(ax_g, bbox=[0,0,1,1])
+		fig_g.text(0.70, 0.05, 'SPI clock (MHz)', fontsize=14)
+		fig_g.text(0.02, 0.90, 'Supply voltage (V)', fontsize=14, rotation=90)
+		tb_g = Table(ax_g, bbox=[0.01,0.01,0.99,0.99])
 		plt.title('Global registers errors')
 		# Add cells
 		for (i,j), val_g in np.ndenumerate(data_g):
@@ -184,12 +188,12 @@ class proofread_scan(ScanBase):
 				loc='center', facecolor=color)
 		# Row Labels...
 		for i in range(len(self.voltages)):
-			tb_g.add_cell(i, -1, width, height, text=str(self.voltages[i])+'V', loc='right',
+			tb_g.add_cell(i, -1, width, height, text=str(self.voltages[i]), loc='right',
 						edgecolor='none', facecolor='none')
 		# Column Labels...
 		for j in range(len(self.bitfiles)):
 			newlabel = str(self.bitfiles[j][-9:-7]).replace("_","")
-			tb_g.add_cell(nrows+1, j, width, height/2, text=newlabel+' MHz', loc='center',
+			tb_g.add_cell(nrows+1, j, width, height/2, text=newlabel, loc='center',
 							   edgecolor='none', facecolor='none')
 		ax_g.add_table(tb_g)
 		shmoopdf.savefig()

@@ -222,9 +222,9 @@ module fe65p2_mio (
     assign #1000 DUT_RESET = GPIO_OUT[1:0];
     ODDR clk_bx_gate(.D1(GPIO_OUT[2]), .D2(1'b0), .C(CLK40), .CE(1'b1), .R(1'b0), .S(1'b0), .Q(DUT_CLK_BX) );
     ODDR clk_out_gate(.D1(GPIO_OUT[6]), .D2(1'b0), .C(CLK160), .CE(1'b1), .R(1'b0), .S(1'b0), .Q(DUT_CLK_DATA) );
-	 ODDR clk_data_gate(.D1(1'b1), .D2(1'b0), .C(CLK160), .CE(1'b1), .R(1'b0), .S(1'b0), .Q(LEMO_TX[0]) );
-	 ODDR clk_pollo_gate(.D1(1'b1), .D2(1'b0), .C(CLK40), .CE(1'b1), .R(1'b0), .S(1'b0), .Q(LEMO_TX[1]) );
-    ODDR clk_cane_gate(.D1(1'b1), .D2(1'b0), .C(CLK8), .CE(1'b1), .R(1'b0), .S(1'b0), .Q(LEMO_TX[2]) );
+	 //ODDR clk_pollo_gate(.D1(1'b1), .D2(1'b0), .C(CLK40), .CE(1'b1), .R(1'b0), .S(1'b0), .Q(LEMO_TX[0]) );
+	// ODDR clk_data_gate(.D1(1'b1), .D2(1'b0), .C(CLK160), .CE(1'b1), .R(1'b0), .S(1'b0), .Q(LEMO_TX[1]) );
+   // ODDR clk_cane_gate(.D1(1'b1), .D2(1'b0), .C(CLK8), .CE(1'b1), .R(1'b0), .S(1'b0), .Q(LEMO_TX[2]) );
     
     assign DUT_PIX_D_CONF = GPIO_OUT[3];
     wire GATE_EN_PIX_SR_CNFG;
@@ -291,7 +291,11 @@ module fe65p2_mio (
         .EXT_START(SLD),
         .PULSE(DUT_INJ)
     );
-    
+	 
+     assign LEMO_TX[0] = DUT_HIT_OR;
+     assign LEMO_TX[2] = DUT_INJ;
+	  //assign LEMO_TX[2] = 1'b0;
+	  
     pulse_gen
     #( 
         .BASEADDR(PULSE_TESTHIT_BASEADDR), 
@@ -387,7 +391,7 @@ module fe65p2_mio (
         .BUS_RD(BUS_RD),
         .BUS_WR(BUS_WR)
     );
-    /*
+    
     tdc_s3 #(
         .BASEADDR(TDC_BASEADDR),
         .HIGHADDR(TDC_HIGHADDR),
@@ -399,9 +403,9 @@ module fe65p2_mio (
         .CLK320(CLK320),
         .CLK160(CLK160),
         .DV_CLK(CLK40),
-        .TDC_IN(DUT_HIT_OR),
-        .TDC_OUT(),
-        .TRIG_IN(LEMO_RX[1]),
+        .TDC_IN(LEMO_RX[0]), //DUT_HIT_OR
+        .TDC_OUT(LEMO_TX[1]),
+        .TRIG_IN(LEMO_RX[1]), //DUT_INJ
         .TRIG_OUT(),
 
         .FIFO_READ(TDC_FIFO_READ),
@@ -420,9 +424,8 @@ module fe65p2_mio (
         
         .TIMESTAMP(16'b0)
     );
-    */
     
-	 assign TDC_FIFO_EMPTY = 1;
+	 //assign TDC_FIFO_EMPTY = 1;
 	 
     wire USB_READ;
     assign USB_READ = FREAD & FSTROBE;
